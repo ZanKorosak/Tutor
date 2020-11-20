@@ -11,6 +11,8 @@ import IconButton from '../components/IconButton';
 import { loginWithEmail } from '../components/Firebase/firebase';
 import FormErrorMessage from '../components/Forms/FormErrorMessage';
 import useStatusBar from '../hooks/useStatusBar';
+import Aux from '../hoc/Auxiliary'
+
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -51,6 +53,20 @@ export default function LoginScreen({ navigation }) {
   }
 
   return (
+    <Aux>
+      <View style={{ flexDirection: 'row', backgroundColor: "#fff"}}>
+        <TouchableOpacity style={styles.headerSelected}>
+        <Text style={{fontSize: 24, marginBottom:45}} >LOGIN</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.header}   
+          onPress={()=> {
+          navigation.navigate('Register')
+        }}>
+
+        <Text style={{fontSize: 24}}>REGISTER</Text>
+        </TouchableOpacity>
+
+      </View>
     <SafeView style={styles.container}>
       <Form
         initialValues={{ email: '', password: '' }}
@@ -93,6 +109,8 @@ export default function LoginScreen({ navigation }) {
         onPress={() => navigation.goBack()}
       />
     </SafeView>
+  </Aux>
+
   );
 }
 
@@ -114,5 +132,23 @@ const styles = StyleSheet.create({
   backButton: {
     justifyContent: 'center',
     alignItems: 'center'
-  }
+  },
+  headerSelected:{
+    width: 50, 
+    justifyContent:"center",
+    alignItems: 'center', 
+    flex:1, 
+    height:5,
+    borderBottomColor: "#313b4e",
+    borderBottomWidth: 5,
+    marginTop: 45
+  },
+  header:{
+    width: 50, 
+    justifyContent:"center",
+    alignItems: 'center', 
+    flex:1, 
+    height:50,
+    
+  },
 });

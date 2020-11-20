@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity, TextInput, View, Text } from 'react-native';
 import * as Yup from 'yup';
+import firebase from 'firebase';
 
 import Colors from '../utils/colors';
 import SafeView from '../components/SafeView';
@@ -11,6 +12,8 @@ import IconButton from '../components/IconButton';
 import FormErrorMessage from '../components/Forms/FormErrorMessage';
 import { registerWithEmail } from '../components/Firebase/firebase';
 import useStatusBar from '../hooks/useStatusBar';
+import Aux from '../hoc/Auxiliary'
+
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -70,6 +73,25 @@ export default function RegisterScreen({ navigation }) {
   }
 
   return (
+    //HEADER
+    <Aux>
+        <View style={{ flexDirection: 'row', backgroundColor: "#fff"}}>
+        <TouchableOpacity style={styles.header}
+        
+        onPress={()=> {
+            navigation.navigate('Login')
+        }}>
+        
+        <Text style={{fontSize: 24}} >LOGIN</Text>
+      </TouchableOpacity>
+        <TouchableOpacity style={styles.headerSelected}>
+
+          <Text style={{fontSize: 24, marginBottom:45}}>REGISTER</Text>
+        </TouchableOpacity>
+
+      </View>
+    
+    
     <SafeView style={styles.container}>
       <Form
         initialValues={{
@@ -128,6 +150,7 @@ export default function RegisterScreen({ navigation }) {
         onPress={() => navigation.goBack()}
       />
     </SafeView>
+  </Aux>
   );
 }
 
@@ -140,5 +163,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 10
-  }
+  },
+  headerSelected:{
+    width: 50, 
+    justifyContent:"center",
+    alignItems: 'center', 
+    flex:1, 
+    height:5,
+    borderBottomColor: "#313b4e",
+    borderBottomWidth: 5,
+    marginTop: 45
+  },
+  header:{
+    width: 50, 
+    justifyContent:"center",
+    alignItems: 'center', 
+    flex:1, 
+    height:50,
+    
+  },
 });
