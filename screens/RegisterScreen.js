@@ -10,7 +10,7 @@ import FormField from '../components/Forms/FormField';
 import FormButton from '../components/Forms/FormButton';
 import IconButton from '../components/IconButton';
 import FormErrorMessage from '../components/Forms/FormErrorMessage';
-import { registerWithEmail } from '../components/Firebase/firebase';
+import { addToDB, registerWithEmail } from '../components/Firebase/firebase';
 import useStatusBar from '../hooks/useStatusBar';
 import Aux from '../hoc/Auxiliary'
 
@@ -101,7 +101,9 @@ export default function RegisterScreen({ navigation }) {
           confirmPassword: ''
         }}
         validationSchema={validationSchema}
-        onSubmit={values => handleOnSignUp(values)}
+        onSubmit={values =>  {handleOnSignUp(values)
+        }
+        }
       >
         <FormField
           name="name"

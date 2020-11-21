@@ -71,7 +71,8 @@ export default function LoginScreen({ navigation }) {
       <Form
         initialValues={{ email: '', password: '' }}
         validationSchema={validationSchema}
-        onSubmit={values => handleOnLogin(values)}
+        onSubmit={values =>  {handleOnLogin(values)
+          navigation.navigate('Welcome');} }
       >
         <FormField
           name="email"
