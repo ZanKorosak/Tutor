@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   FlatList  
 } from 'react-native';
-import { userInfo } from '../components/Firebase/firebase';
 import { db, auth} from '../components/Firebase/firebase';
 
 export default class ProfileView extends Component {
@@ -18,15 +17,13 @@ export default class ProfileView extends Component {
     this.state = {
         user: [],
         data: [
-            {id:1, image: "https://img.icons8.com/color/70/000000/heart.png",     title:"Your tutors"},
-            {id:2, image: "https://img.icons8.com/color/70/000000/book.png",     title:"Your subjects"},
-            {id:3, image: "https://img.icons8.com/color/70/000000/checkmark.png", title:"Terms and conditions"},
-            {id:4, image: "https://img.icons8.com/color/70/000000/gear.png",        title:"Settings"},
-            {id:5, image: "https://img.icons8.com/color/70/000000/shutdown.png",         title:"Log out"},
+            {id:1, image: "https://img.icons8.com/color/70/000000/heart-broken.png",     title:"Your tutors", navigatePath: "ProfileTutorScreen"},
+            {id:2, image: "https://img.icons8.com/color/70/000000/book.png",     title:"Your subjects", navigatePath: "ProfileSubjectScreen"},
+            {id:3, image: "https://img.icons8.com/color/70/000000/checkmark.png", title:"Terms and conditions", navigatePath: "TermsScreen"},
+            {id:4, image: "https://img.icons8.com/color/70/000000/gear.png",        title:"Settings", navigatePath: "ProfileSettingsScreen"},
+            {id:5, image: "https://img.icons8.com/color/70/000000/shutdown.png",         title:"Log out", navigatePath: "ProfileSettingsScreen" },
       ],
     };
-
-
   }
 
   componentDidMount() {
@@ -39,7 +36,6 @@ export default class ProfileView extends Component {
   }
 
   render() {
-
     return (
       <View style={styles.container}>
           <View style={styles.header}>
@@ -59,11 +55,13 @@ export default class ProfileView extends Component {
               }}
               renderItem={({item}) => {
                 return (
-                  <TouchableOpacity>
-                    <View style={styles.box}>
+                  <TouchableOpacity onPress={()=> {
+                    this.props.navigation.navigate(item.navigatePath)}}>
+                    <View style={styles.box} >
                       <Image style={styles.icon} source={{uri: item.image}}/>
                       <Text style={styles.title}>{item.title}</Text>
                       <Image style={styles.btn} source={{uri: "https://img.icons8.com/customer/office/40"}}/>
+
                     </View>
                   </TouchableOpacity>
                 )
