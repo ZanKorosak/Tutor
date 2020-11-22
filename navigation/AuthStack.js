@@ -6,6 +6,7 @@ import RegisterScreen from '../screens/RegisterScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 
+
 const Stack = createStackNavigator();
 
 export default function AuthStack() {

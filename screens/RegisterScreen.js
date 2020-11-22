@@ -64,9 +64,9 @@ export default function RegisterScreen({ navigation }) {
   }
 
   async function handleOnSignUp(values, actions) {
-    const { email, password } = values;
+    const { email, password, name } = values;
     try {
-      await registerWithEmail(email, password);
+      await registerWithEmail(email, password, name);
     } catch (error) {
       setRegisterError(error.message);
     }

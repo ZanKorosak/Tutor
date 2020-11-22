@@ -30,7 +30,7 @@ export default function WelcomeScreen({ navigation }) {
         </View>
         :
         <View style={styles.buttonContainer}>
-          <AppButton title="Profile" onPress={() => navigation.navigate('Profile')} />
+          <AppButton title="Profile" onPress={() => navigation.navigate('ProfileScreen')} />
           <AppButton title="Logout" onPress={() => { logout()}}></AppButton>
           <AppButton
             title="Search for Tutors"
