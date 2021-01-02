@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,9 +6,14 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  FlatList  
+  FlatList,
+  Button,
+  Alert,
+  
 } from 'react-native';
-import { db, auth} from '../components/Firebase/firebase';
+import { db, auth, logout} from '../components/Firebase/firebase';
+import Colors from '../utils/colors';
+
 
 export default class ProfileView extends Component {
 
@@ -17,31 +22,62 @@ export default class ProfileView extends Component {
     this.state = {
         user: [],
         data: [
-            {id:1, image: "https://img.icons8.com/color/70/000000/heart-broken.png",     title:"Your tutors", navigatePath: "ProfileTutorScreen"},
-            {id:2, image: "https://img.icons8.com/color/70/000000/book.png",     title:"Your subjects", navigatePath: "ProfileSubjectScreen"},
-            {id:3, image: "https://img.icons8.com/color/70/000000/checkmark.png", title:"Terms and conditions", navigatePath: "TermsScreen"},
-            {id:4, image: "https://img.icons8.com/color/70/000000/gear.png",        title:"Settings", navigatePath: "ProfileSettingsScreen"},
-            {id:5, image: "https://img.icons8.com/color/70/000000/shutdown.png",         title:"Log out", navigatePath: "ProfileSettingsScreen" },
+            {id:1, image: "https://img.icons8.com/color/70/000000/heart.png",     title:"Your tutors", navigatePath: "Your Tutors"},
+            {id:2, image: "https://img.icons8.com/color/70/000000/book.png",     title:"Your subjects", navigatePath: "Your Subjects"},
+            {id:3, image: "https://img.icons8.com/color/70/000000/checkmark.png", title:"Terms and conditions", navigatePath: "Terms"},
+            {id:4, image: "https://img.icons8.com/color/70/000000/gear.png",        title:"Settings", navigatePath: "Settings"},
+            {id:5, image: "https://img.icons8.com/color/70/000000/shutdown.png",         title:"Log out", navigatePath: "Logout" },
       ],
     };
+    db.ref('/users').once('value').then((querySnapshot) => {
+      this.setState({
+        user: querySnapshot.val()[auth.currentUser.uid],
+      });
+    });
+    this.msg = "If you create an account on the Website, you are responsible for maintaining the security of your account, and you are fully responsible for all activities that occur under the account and any other actions taken in connection with the account. You agree to provide and maintain accurate, current and complete information, including your contact information for notices and other communications from us and your payment information. You may not use false or misleading information in connection to your account, or trade on the name or reputation of others, and Usabilla may change or remove any information that it considers inappropriate or unlawful, or otherwise likely to expose Usabilla to claims of third parties. You agree that we may take steps to verify the accuracy of information you have provided to us."
   }
 
-  componentDidMount() {
-    db.ref('/users').orderByChild("id").equalTo(auth.currentUser.uid).on('child_added', querySnapShot => {
-      let data = querySnapShot.val() ? querySnapShot.val() : {};
+  createTwoButtonAlert() {
+    alert(
+      this.msg,
+      "My Alert Msg",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        { text: "OK", onPress: () => console.log("OK Pressed") }
+      ],
+      { cancelable: false }
+      );
+  }
+
+  startRefreshing() {
+    setTimeout(() => {
+    }, 1500);
+  }
+
+  componentDidMount(){
+    db.ref('/users').once('value').then((querySnapshot) => {
       this.setState({
-        user: data,
+        user: querySnapshot.val()[auth.currentUser.uid],
       });
     });
   }
 
+ 
+
+
+
   render() {
     return (
+      
       <View style={styles.container}>
+
           <View style={styles.header}>
             <View style={styles.headerContent}>
                 <Image style={styles.avatar} source={{uri: this.state.user.profile_picture}}/>
-                <Text style={styles.name}>{this.state.user.name}</Text>
+                <Text style={styles.username}>{this.state.user.name}</Text>
             </View>
           </View>
 
@@ -56,11 +92,17 @@ export default class ProfileView extends Component {
               renderItem={({item}) => {
                 return (
                   <TouchableOpacity onPress={()=> {
-                    this.props.navigation.navigate(item.navigatePath)}}>
+                    if (item.navigatePath === 'Logout') {
+                      logout()
+                    }
+                    if (item.navigatePath === 'Terms') {
+                      this.createTwoButtonAlert()
+                    }
+                    else {
+                      this.props.navigation.navigate(item.navigatePath)}}}>
                     <View style={styles.box} >
                       <Image style={styles.icon} source={{uri: item.image}}/>
                       <Text style={styles.title}>{item.title}</Text>
-                      <Image style={styles.btn} source={{uri: "https://img.icons8.com/customer/office/40"}}/>
 
                     </View>
                   </TouchableOpacity>
@@ -74,7 +116,12 @@ export default class ProfileView extends Component {
 
 const styles = StyleSheet.create({
   header:{
-    backgroundColor: "#EE82EE",
+    backgroundColor: "#009B72",
+  },
+
+  container: {
+    flex: 1,
+    backgroundColor: "#1C1E1F"
   },
   headerContent:{
     padding:30,
@@ -84,8 +131,8 @@ const styles = StyleSheet.create({
     width: 130,
     height: 130,
     borderRadius: 63,
-    borderWidth: 4,
-    borderColor: "#FF6347",
+    borderWidth:  4,
+    borderColor: "#2A2D34",
     marginBottom:10,
   },
   icon:{
@@ -94,8 +141,9 @@ const styles = StyleSheet.create({
   },
   title:{
     fontSize:18,
-    color:"#EE82EE",
-    marginLeft:4
+    color:"#F26430",
+    marginLeft:4,
+
   },
   btn:{
     marginLeft: 'auto',
@@ -107,8 +155,9 @@ const styles = StyleSheet.create({
   },
   box: {
     padding:5,
-    marginBottom:2,
-    backgroundColor: '#FFFFFF',
+    marginTop:5,
+    marginBottom:5,
+    backgroundColor: '#1a1c1e',
     flexDirection: 'row',
     shadowColor: 'black',
     shadowOpacity: .2,
@@ -116,10 +165,12 @@ const styles = StyleSheet.create({
       height:1,
       width:-2
     },
+
     elevation:2
   },
   username:{
-    color: "#20B2AA",
+    fontWeight: 'bold',
+    color: "#2A2D34",
     fontSize:22,
     alignSelf:'center',
     marginLeft:10

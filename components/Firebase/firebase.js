@@ -29,10 +29,11 @@ export const registerWithEmail = (email, password, name) => {
       email: email,
       profile_picture : "https://www.petwellnessaz.com/wp-content/uploads/2020/07/blank-profile-picture-973460_640-300x300-1.png",
       liked: 0,
-      tutor:0
+      subjects: "",
+      isTutor:0,
+      likedTutors:"",
     })
 })
-
 }
 
 

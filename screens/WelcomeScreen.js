@@ -13,30 +13,43 @@ export default function WelcomeScreen({ navigation }) {
   
   return (
     <View style={styles.container}>
-    <View style={styles.logoContainer}>
-      <Image source={require('../assets/flame.png')} style={styles.logo} />
-      <Text style={styles.subtitle}>Najdi Tutorja</Text>
-    </View>
+      <View style={styles.logoContainer}>
+        <Image source={require('../assets/tutor.png')} style={styles.logo} />
+        <Text style={styles.subtitle}>Najdi Tutorja</Text>
+      </View>
 
 
       {!userIn ?
         <View style={styles.buttonContainer}>
-          <AppButton title="Login or Register" onPress={() => navigation.navigate('Login')}/> 
+          <AppButton 
+          title="Login or Register" 
+          onPress={() => navigation.navigate('Login')}
+          /> 
           <AppButton
-          title="Search for Tutors"
+          title="Search for Subjects"
           color="secondary"
-          onPress={() => navigation.navigate('Register')}
+          onPress={() => navigation.navigate('Find Subjects')}
           />
         </View>
         :
         <View style={styles.buttonContainer}>
-          <AppButton title="Profile" onPress={() => navigation.navigate('ProfileScreen')} />
-          <AppButton title="Logout" onPress={() => { logout()}}></AppButton>
+          <AppButton 
+          title="Profile" 
+          color="primary"
+          onPress={() => navigation.navigate('Profile')} 
+          />
           <AppButton
-            title="Search for Tutors"
+            title="Search for Subjects"
             color="secondary"
-            onPress={() => navigation.navigate('Register')}
-            />
+            onPress={() => navigation.navigate('Find Subjects')}
+          />
+          <AppButton 
+            title="Logout" 
+            color="red"
+            onPress={() => { logout()}
+            }>
+          </AppButton>
+
         </View> 
       }
       
@@ -46,56 +59,13 @@ export default function WelcomeScreen({ navigation }) {
 }
 
 
-  /*
-    if (loggedIn) {
-      return (
-        <View style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Image source={require('../assets/flame.png')} style={styles.logo} />
-          <Text style={styles.subtitle}>Najdi Tutorja</Text>
-        </View>
-        <View style={styles.buttonContainer}>
-          <AppButton title="Profile" onPress={() => navigation.navigate('Profile')} />
-          <AppButton title="Logout" onPress={() => { logout()
-          } }/>
-          <AppButton
-            title="Search for Tutors"
-            color="secondary"
-            onPress={() => navigation.navigate('Register')}
-          />
-        </View>
-      </View>
-      )
-    }
-    else {
-      return ( 
-        <View style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Image source={require('../assets/flame.png')} style={styles.logo} />
-          <Text style={styles.subtitle}>Najdi Tutorja</Text>
-        </View>
-        <View style={styles.buttonContainer}>
-          <AppButton title="Login or Register" onPress={() => navigation.navigate('Login')} />
-          <AppButton
-            title="Search for Tutors"
-            color="secondary"
-            onPress={() => navigation.navigate('Register')}
-            
-          />
-        </View>
-      </View>
-      )
-    }
-  }
-  */
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    backgroundColor: Colors.mediumGrey
+    backgroundColor: "#042b37",
   },
   logoContainer: {
     position: 'absolute',

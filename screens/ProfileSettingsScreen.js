@@ -1,219 +1,197 @@
-import React, { Component } from "react";
-import { Image, StyleSheet, ScrollView, TextInput } from "react-native";
-import Slider from "react-native-slider";
+import React, { Component } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+  Button
+} from 'react-native';
+import { db, auth} from '../components/Firebase/firebase';
 
-import { Divider, Button, Block, Text, Switch } from '../components';
-import { theme, mocks } from '../constants';
+export default class SettingsScreen  extends Component {
 
-class Settings extends Component {
-  state = {
-    budget: 850,
-    monthly: 1700,
-    notifications: true,
-    newsletter: false,
-    editing: null,
-    profile: {}
-  };
-
-  componentDidMount() {
-    this.setState({ profile: this.props.profile });
+  constructor(props) {
+    super(props);
+    this.state = {
+        user: [],
+    };
+    db.ref('/users').once('value').then((querySnapshot) => {
+      this.setState({
+        user: querySnapshot.val()[auth.currentUser.uid],
+      });
+    });
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleEmailChange = this.handleEmailChange.bind(this);
+    this.handlePicChange = this.handlePicChange.bind(this);
+    this.writeUserData = this.writeUserData.bind(this);
   }
 
-  handleEdit(name, text) {
-    const { profile } = this.state;
-    profile[name] = text;
 
-    this.setState({ profile });
+  handleNameChange(name) {
+    this.state.user.name = name;
   }
 
-  toggleEdit(name) {
-    const { editing } = this.state;
-    this.setState({ editing: !editing ? name : null });
+  handleEmailChange(email) {
+    this.state.user.email = email;
   }
 
-  renderEdit(name) {
-    const { profile, editing } = this.state;
-
-    if (editing === name) {
-      return (
-        <TextInput
-          defaultValue={profile[name]}
-          onChangeText={text => this.handleEdit([name], text)}
-        />
-      );
-    }
-
-    return <Text bold>{profile[name]}</Text>;
+  handlePicChange(profile_picture) {
+    this.state.user.profile_picture = profile_picture;
   }
+
+  writeUserData() {
+    // A post entry.
+    let uid = auth.currentUser.uid;
+    var postData = {
+      email: this.state.user.email,
+      liked: this.state.user.liked,
+      name: this.state.user.name,
+      profile_picture: this.state.user.profile_picture,
+      subjects: this.state.user.subjects,
+      isTutor: this.state.user.isTutor,
+      likedTutors: this.state.user.likedTutors,
+    };
+  
+  
+    // Write the new post's data simultaneously in the posts list and the user's post list.
+    var updates = {};
+    updates['/users/' + uid] = postData;
+  
+    this.state.user = db.ref().update(updates)
+    this.props.navigation.navigate('NajdiTutorja');
+
+  }
+
 
   render() {
-    const { profile, editing } = this.state;
-
     return (
-      <Block>
-        <Block flex={false} row center space="between" style={styles.header}>
-          <Text h1 bold>
-            Settings
-          </Text>
-          <Button>
-            <Image source={profile.avatar} style={styles.avatar} />
-          </Button>
-        </Block>
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <Block style={styles.inputs}>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
-                <Text gray2 style={{ marginBottom: 10 }}>
-                  Username
-                </Text>
-                {this.renderEdit("username")}
-              </Block>
-              <Text
-                medium
-                secondary
-                onPress={() => this.toggleEdit("username")}
-              >
-                {editing === "username" ? "Save" : "Edit"}
-              </Text>
-            </Block>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
-                <Text gray2 style={{ marginBottom: 10 }}>
-                  Location
-                </Text>
-                {this.renderEdit("location")}
-              </Block>
-              <Text
-                medium
-                secondary
-                onPress={() => this.toggleEdit("location")}
-              >
-                {editing === "location" ? "Save" : "Edit"}
-              </Text>
-            </Block>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
-                <Text gray2 style={{ marginBottom: 10 }}>
-                  E-mail
-                </Text>
-                <Text bold>{profile.email}</Text>
-              </Block>
-            </Block>
-          </Block>
-
-          <Divider margin={[theme.sizes.base, theme.sizes.base * 2]} />
-
-          <Block style={styles.sliders}>
-            <Block margin={[10, 0]}>
-              <Text gray2 style={{ marginBottom: 10 }}>
-                Budget
-              </Text>
-              <Slider
-                minimumValue={0}
-                maximumValue={1000}
-                style={{ height: 19 }}
-                thumbStyle={styles.thumb}
-                trackStyle={{ height: 6, borderRadius: 6 }}
-                minimumTrackTintColor={theme.colors.secondary}
-                maximumTrackTintColor="rgba(157, 163, 180, 0.10)"
-                value={this.state.budget}
-                onValueChange={value => this.setState({ budget: value })}
-              />
-              <Text caption gray right>
-                $1,000
-              </Text>
-            </Block>
-            <Block margin={[10, 0]}>
-              <Text gray2 style={{ marginBottom: 10 }}>
-                Monthly Cap
-              </Text>
-              <Slider
-                minimumValue={0}
-                maximumValue={5000}
-                style={{ height: 19 }}
-                thumbStyle={styles.thumb}
-                trackStyle={{ height: 6, borderRadius: 6 }}
-                minimumTrackTintColor={theme.colors.secondary}
-                maximumTrackTintColor="rgba(157, 163, 180, 0.10)"
-                value={this.state.monthly}
-                onValueChange={value => this.setState({ monthly: value })}
-              />
-              <Text caption gray right>
-                $5,000
-              </Text>
-            </Block>
-          </Block>
-
-          <Divider />
-
-          <Block style={styles.toggles}>
-            <Block
-              row
-              center
-              space="between"
-              style={{ marginBottom: theme.sizes.base * 2 }}
-            >
-              <Text gray2>Notifications</Text>
-              <Switch
-                value={this.state.notifications}
-                onValueChange={value => this.setState({ notifications: value })}
-              />
-            </Block>
-
-            <Block
-              row
-              center
-              space="between"
-              style={{ marginBottom: theme.sizes.base * 2 }}
-            >
-              <Text gray2>Newsletter</Text>
-              <Switch
-                value={this.state.newsletter}
-                onValueChange={value => this.setState({ newsletter: value })}
-              />
-            </Block>
-          </Block>
-        </ScrollView>
-      </Block>
+      <View style={styles.container}>
+        <ScrollView>
+          <View style={styles.inputContainer}>
+          <Text style={styles.text}>Your Profile Name</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder={this.state.user.name}
+            maxLength={20}
+            onChangeText={this.handleNameChange}
+          />
+          <Text style={styles.text}>Your Profile Picture</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder={this.state.user.profile_picture}
+            onChangeText={this.handlePicChange}
+          />
+        <View style={styles.inputContainer}>
+          <Button
+            title="Save"
+            onPress={this.writeUserData}
+          />
+        </View>
+    </View>
+</ScrollView>
+      </View>
     );
   }
 }
+    
 
-Settings.defaultProps = {
-  profile: mocks.profile
-};
-
-export default Settings;
 
 const styles = StyleSheet.create({
+  saveButton: {
+    borderWidth: 1,
+    borderColor: '#007BFF',
+    backgroundColor: '#007BFF',
+    padding: 15,
+    margin: 5
+  },
+  text:{
+    color:"#009B72"
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    textAlign: 'center'
+  },  
+  inputContainer: {
+    paddingTop: 15
+  },
+  textInput: {
+    borderColor: '#CCCCCC',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    color:"#F26430",
+    height: 50,
+    fontSize: 25,
+    paddingLeft: 20,
+    paddingRight: 20
+  },  
+  container: {
+    flex: 1,
+    paddingTop: 45,
+    backgroundColor: '#042b37',
+  },
   header: {
-    paddingHorizontal: theme.sizes.base * 2
+    fontSize: 25,
+    textAlign: 'center',
+    margin: 10,
+    fontWeight: 'bold',
+  },
+  header:{
+    backgroundColor: "#EE82EE",
+  },
+  headerContent:{
+    padding:30,
+    alignItems: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   avatar: {
-    height: theme.sizes.base * 2.2,
-    width: theme.sizes.base * 2.2
+    width: 130,
+    height: 130,
+    borderRadius: 63,
+    borderWidth: 4,
+    borderColor: "#FF6347",
+    marginBottom:10,
   },
-  inputs: {
-    marginTop: theme.sizes.base * 0.7,
-    paddingHorizontal: theme.sizes.base * 2
+  icon:{
+    width: 40,
+    height: 40,
   },
-  inputRow: {
-    alignItems: "flex-end"
+  title:{
+    fontSize:18,
+    color:"#EE82EE",
+    marginLeft:4
   },
-  sliders: {
-    marginTop: theme.sizes.base * 0.7,
-    paddingHorizontal: theme.sizes.base * 2
+  btn:{
+    marginLeft: 'auto',
+     width: 40,
+    height: 40,
   },
-  thumb: {
-    width: theme.sizes.base,
-    height: theme.sizes.base,
-    borderRadius: theme.sizes.base,
-    borderColor: "white",
-    borderWidth: 3,
-    backgroundColor: theme.colors.secondary
+  body: {
+    backgroundColor :"#E6E6FA",
   },
-  toggles: {
-    paddingHorizontal: theme.sizes.base * 2
+  box: {
+    padding:5,
+    marginBottom:2,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    shadowColor: 'black',
+    shadowOpacity: .2,
+    shadowOffset: {
+      height:1,
+      width:-2
+    },
+    elevation:2
+  },
+  username:{
+    color: "#20B2AA",
+    fontSize:22,
+    alignSelf:'center',
+    marginLeft:10
   }
 });
+                                            
